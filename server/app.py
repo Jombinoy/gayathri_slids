@@ -102,11 +102,20 @@ if __name__ == '__main__':
     templates_dir = Path(__file__).parent / 'templates'
     templates_dir.mkdir(exist_ok=True)
     
+    # Get port from environment variable (for Render deployment)
+    port = int(os.environ.get('PORT', 5000))
+    
     print("🚀 Starting RL Presentation Server...")
     print("📊 Loading presentation content...")
     print(f"📁 Serving diagrams from: {DIAGRAMS_DIR}")
+    print(f"📁 Base directory: {BASE_DIR}")
     print("\n✅ Server ready!")
-    print("🌐 Open browser to: http://localhost:5000")
+    print(f"🌐 Server running on port: {port}")
     print("\nPress CTRL+C to stop the server\n")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Check if markdown files exist
+    for filename in ['rl_course_presentation.md', 'module2_content.md', 'module3_content.md', 'modules_4_5_6_content.md', 'modules_7_8_labs_final.md']:
+        filepath = BASE_DIR / filename
+        print(f"Checking: {filepath} - {'✓ Found' if filepath.exists() else '✗ Missing'}")
+    
+    app.run(debug=False, host='0.0.0.0', port=port)
