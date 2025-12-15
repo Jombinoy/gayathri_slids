@@ -54,14 +54,22 @@ def load_all_presentations():
     ]
     
     all_slides = []
+    print(f"📁 BASE_DIR: {BASE_DIR}")
+    print(f"📁 Looking for presentation files...")
     for filename in files:
         filepath = BASE_DIR / filename
+        print(f"  Checking: {filepath}")
         if filepath.exists():
+            print(f"    ✅ Found: {filename}")
             with open(filepath, 'r', encoding='utf-8') as f:
                 content = f.read()
                 slides = parse_markdown_to_slides(content)
                 all_slides.extend(slides)
+                print(f"    📊 Loaded {len(slides)} slides from {filename}")
+        else:
+            print(f"    ❌ NOT FOUND: {filename}")
     
+    print(f"📊 Total slides loaded: {len(all_slides)}")
     return all_slides
 
 @app.route('/')
