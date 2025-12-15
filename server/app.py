@@ -54,14 +54,34 @@ def load_all_presentations():
     ]
     
     all_slides = []
+    missing_files = []
+    
+    print(f"\n🔍 Looking for markdown files in: {BASE_DIR}")
+    print(f"   Current working directory: {os.getcwd()}")
+    print(f"   __file__ is: {__file__}")
+    
     for filename in files:
         filepath = BASE_DIR / filename
+        print(f"   Checking: {filepath}")
         if filepath.exists():
-            with open(filepath, 'r', encoding='utf-8') as f:
-                content = f.read()
-                slides = parse_markdown_to_slides(content)
-                all_slides.extend(slides)
+            print(f"     ✓ Found!")
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    slides = parse_markdown_to_slides(content)
+                    all_slides.extend(slides)
+                    print(f"     ✓ Loaded {len(slides)} slides from {filename}")
+            except Exception as e:
+                print(f"     ✗ Error reading {filename}: {str(e)}")
+                missing_files.append(f"{filename} (read error: {str(e)})")
+        else:
+            print(f"     ✗ Not found!")
+            missing_files.append(filename)
     
+    if missing_files:
+        print(f"\n⚠️  Missing files: {', '.join(missing_files)}")
+    
+    print(f"\n✅ Total slides loaded: {len(all_slides)}\n")
     return all_slides
 
 @app.route('/')
@@ -72,11 +92,26 @@ def index():
 @app.route('/api/slides')
 def get_slides():
     """API endpoint to get all slides"""
-    slides = load_all_presentations()
-    return jsonify({
-        'total': len(slides),
-        'slides': slides
-    })
+    try:
+        slides = load_all_presentations()
+        if not slides:
+            return jsonify({
+                'error': 'No slides found',
+                'message': 'Could not load any markdown files. Check server logs for details.',
+                'base_dir':  str(BASE_DIR),
+                'cwd': os.getcwd()
+            }), 404
+        return jsonify({
+            'total': len(slides),
+            'slides': slides
+        })
+    except Exception as e:
+        return jsonify({
+            'error': 'Failed to load presentation',
+            'message': str(e),
+            'base_dir': str(BASE_DIR),
+            'cwd': os.getcwd()
+        }), 500
 
 @app.route('/diagrams/<path:filename>')
 def serve_diagram(filename):
