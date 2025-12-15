@@ -1,0 +1,12 @@
+# Create virtual environment (first time only)
+python -m venv venv
+
+# Activate virtual environment
+.\venv\Scripts\activate
+
+# Install requirements
+pip install -r server\requirements.txt
+
+# Run server
+cd server
+python app.py

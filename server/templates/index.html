@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCSE432E - Reinforcement Learning</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="/static/enhanced.css">
+
+    <style>
+        :root {
+            --primary-blue: #0ea5e9;
+            --primary-sky: #38bdf8;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-indigo: #6366f1;
+            --bg-dark: #0f172a;
+            --bg-darker: #020617;
+            --text-light: #e8eaed;
+        }
+
+        .reveal {
+            font-size: 32px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .reveal h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            font-weight: 700;
+        }
+
+        .reveal h2 {
+            font-size: 1.8em;
+            color: var(--primary-blue);
+            border-bottom: 3px solid var(--accent-cyan);
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .reveal h3 {
+            font-size: 1.4em;
+            color: var(--accent-cyan);
+            font-weight: 500;
+        }
+
+        .reveal h4 {
+            font-size: 1.2em;
+            color: var(--primary-blue);
+        }
+
+        .reveal img {
+            max-width: 90%;
+            max-height: 500px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(14, 165, 233, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .reveal img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 32px rgba(14, 165, 233, 0.5);
+        }
+
+        .reveal code {
+            background: #2d2d2d;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--accent-cyan);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+        }
+
+        .reveal pre code {
+            max-height: 600px;
+            font-size: 0.65em;
+            line-height: 1.4;
+        }
+
+        .reveal .slides section {
+            text-align: left;
+            height: 100%;
+            overflow-y: auto !important;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* Center slides with .center-slide class */
+        .reveal .slides section.center-slide {
+            text-align: center !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .reveal .slides section.center-slide h1,
+        .reveal .slides section.center-slide h2,
+        .reveal .slides section.center-slide h3,
+        .reveal .slides section.center-slide p {
+            text-align: center;
+            width: 100%;
+        }
+
+        .reveal .slides section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .reveal .slides section::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .reveal .slides section::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary-blue), var(--accent-cyan));
+            border-radius: 4px;
+        }
+
+        .reveal ul,
+        .reveal ol {
+            margin-left: 1em;
+        }
+
+        .reveal li {
+            margin: 0.5em 0;
+        }
+
+        .reveal ul li::marker {
+            color: var(--primary-emerald);
+        }
+
+        .reveal strong {
+            color: var(--accent-gold);
+        }
+
+        .reveal table {
+            font-size: 0.7em;
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 90%;
+        }
+
+        .reveal table th {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-sky));
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            border: 1px solid #555;
+        }
+
+        .reveal table td {
+            border: 1px solid #444;
+            padding: 10px 8px;
+            text-align: left;
+        }
+
+        .reveal table tr:nth-child(even) {
+            background-color: rgba(14, 165, 233, 0.05);
+        }
+
+        .reveal table tr:hover {
+            background-color: rgba(14, 165, 233, 0.15);
+        }
+
+        .slide-number {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-cyan)) !important;
+            color: white !important;
+            padding: 8px 14px !important;
+            border-radius: 20px !important;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+        }
+
+        .reveal .controls {
+            color: var(--primary-emerald);
+        }
+
+        .reveal .controls button {
+            width: 60px !important;
+            height: 60px !important;
+            border: 2px solid var(--primary-blue) !important;
+            background: rgba(14, 165, 233, 0.1) !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .reveal .controls button:hover {
+            background: rgba(14, 165, 233, 0.3) !important;
+            border-color: var(--accent-cyan) !important;
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.5) !important;
+            transform: scale(1.1) !important;
+        }
+
+        .reveal .controls .navigate-left,
+        .reveal .controls .navigate-right {
+            border-width: 0 8px 8px 0 !important;
+            padding: 12px !important;
+        }
+
+        .reveal .controls .navigate-up,
+        .reveal .controls .navigate-down {
+            border-width: 0 8px 8px 0 !important;
+            padding: 12px !important;
+        }
+
+        .reveal .progress {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .reveal .progress span {
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-cyan));
+        }
+
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #191919;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        #loading h2 {
+            color: var(--primary-purple);
+            margin-bottom: 20px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-blue);
+            border-right: 5px solid var(--accent-cyan);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Animated Particles Background */
+        #particles-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 25%, #1e3a8a 50%, #0f172a 75%, #020617 100%);
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite;
+            overflow: hidden;
+        }
+
+        #particles-bg::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.3), rgba(56, 189, 248, 0.15) 40%, transparent 70%);
+            border-radius: 50%;
+            top: -300px;
+            left: -300px;
+            animation: float1 25s ease-in-out infinite, pulse1 8s ease-in-out infinite;
+            filter: blur(60px);
+        }
+
+        #particles-bg::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.3), rgba(59, 130, 246, 0.15) 40%, transparent 70%);
+            border-radius: 50%;
+            bottom: -250px;
+            right: -250px;
+            animation: float2 30s ease-in-out infinite, pulse2 10s ease-in-out infinite;
+            filter: blur(60px);
+        }
+
+        @keyframes gradientFlow {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes float1 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            25% {
+                transform: translate(100px, 100px) rotate(90deg);
+            }
+
+            50% {
+                transform: translate(50px, 200px) rotate(180deg);
+            }
+
+            75% {
+                transform: translate(150px, 50px) rotate(270deg);
+            }
+        }
+
+        @keyframes float2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+
+            33% {
+                transform: translate(-80px, -100px) rotate(240deg);
+            }
+
+            66% {
+                transform: translate(-150px, -50px) rotate(120deg);
+            }
+        }
+
+        @keyframes pulse1 {
+
+            0%,
+            100% {
+                opacity: 0.6;
+                filter: blur(60px);
+            }
+
+            50% {
+                opacity: 0.9;
+                filter: blur(80px);
+            }
+        }
+
+        @keyframes pulse2 {
+
+            0%,
+            100% {
+                opacity: 0.5;
+                filter: blur(60px);
+            }
+
+            50% {
+                opacity: 0.85;
+                filter: blur(75px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated Background Particles -->
+    <div id="particles-bg"></div>
+
+    <div id="loading">
+        <h2>Loading RL Course Presentation...</h2>
+        <div class="loader"></div>
+        <p id="load-status" style="color: #7fcdff; margin-top: 20px;">Initializing...</p>
+    </div>
+
+    <div class="reveal">
+        <div class="slides" id="slides-container">
+            <!-- Slides will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <!-- Reveal.js JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/math/math.js"></script>
+
+    <script>
+        async function loadPresentation() {
+            const loadStatus = document.getElementById('load-status');
+
+            try {
+                loadStatus.textContent = 'Fetching presentation data...';
+
+                // Fetch slides from API
+                const response = await fetch('/api/slides');
+                const data = await response.json();
+
+                loadStatus.textContent = `Loading ${data.total} slides...`;
+
+                // Get slides container
+                const container = document.getElementById('slides-container');
+
+                // Create slides
+                data.slides.forEach((slide, index) => {
+                    const section = document.createElement('section');
+
+                    // Set slide content
+                    section.innerHTML = slide.content;
+
+                    // Fix image paths to use /diagrams/ endpoint
+                    const images = section.querySelectorAll('img');
+                    images.forEach(img => {
+                        const src = img.getAttribute('src');
+                        if (src && src.includes('diagrams/')) {
+                            const filename = src.split('diagrams/')[1];
+                            img.setAttribute('src', `/diagrams/${filename}`);
+                        }
+                    });
+
+                    // Add speaker notes if present
+                    if (slide.notes) {
+                        const notes = document.createElement('aside');
+                        notes.className = 'notes';
+                        notes.textContent = slide.notes;
+                        section.appendChild(notes);
+                    }
+
+                    container.appendChild(section);
+                });
+
+                loadStatus.textContent = 'Initializing presentation...';
+
+                // Initialize Reveal.js
+                await Reveal.initialize({
+                    hash: true,
+                    slideNumber: 'c/t',
+                    transition: 'slide',
+                    backgroundTransition: 'fade',
+                    center: false,
+                    width: 1280,
+                    height: 720,
+                    margin: 0.05,
+                    plugins: [RevealHighlight, RevealNotes, RevealMath.KaTeX],
+                    keyboard: {
+                        72: function () { Reveal.slide(0); }, // 'H' for home
+                    }
+                });
+
+                // Hide loading screen
+                document.getElementById('loading').style.display = 'none';
+
+                console.log(`✅ Loaded ${data.total} slides successfully!`);
+                console.log(`💡 Tip: If content is cut off, scroll down on the slide using mouse wheel or Page Down`);
+
+                // Center module title slides
+                setTimeout(() => {
+                    const slides = document.querySelectorAll('.reveal .slides section');
+                    slides.forEach(slide => {
+                        const h1 = slide.querySelector('h1');
+                        const h2 = slide.querySelector('h2');
+                        if ((h1 && h1.textContent.includes('MODULE')) ||
+                            (h2 && h2.textContent.includes('MODULE'))) {
+                            slide.classList.add('center-slide');
+                        }
+                    });
+                }, 500);
+
+
+            } catch (error) {
+                console.error('Error loading presentation:', error);
+                loadStatus.innerHTML = `
+                    <p style="color: #ff6b6b;">Error loading presentation!</p>
+                    <p style="color: #7fcdff; font-size: 0.8em;">${error.message}</p>
+                    <p style="color: #7fcdff; font-size: 0.8em;">Please check the server console for details.</p>
+                `;
+            }
+        }
+
+        // Load presentation when page is ready
+        document.addEventListener('DOMContentLoaded', loadPresentation);
+    </script>
+
+    <!-- Advanced Particle System -->
+    <script>
+        // Create AI/ML themed floating elements
+        const particlesContainer = document.getElementById('particles-bg');
+
+        // AI/ML themed symbols
+        const aiSymbols = ['◉', '◈', '◇', '⬡', '⬢', '◆', '⚛', '⚡', '●', '○'];
+        const binaryDigits = ['0', '1'];
+
+        // Create floating AI/ML symbols
+        for (let i = 0; i < 25; i++) {
+            const particle = document.createElement('div');
+            const isSymbol = Math.random() > 0.35;
+
+            if (isSymbol) {
+                // AI/ML symbol (neural nodes, atoms, etc.)
+                const symbol = aiSymbols[Math.floor(Math.random() * aiSymbols.length)];
+                const size = Math.random() * 30 + 25; // 25-55px (doubled from 15-35px)
+                const startX = Math.random() * 100;
+                const startY = Math.random() * 100;
+                const duration = Math.random() * 12 + 10; // 10-22s (faster, was 20-45s)
+                const delay = Math.random() * 4;
+
+                particle.textContent = symbol;
+                particle.style.cssText = `
+                    position: absolute;
+                    font-size: ${size}px;
+                    color: rgba(14, 165, 233, 0.7);
+                    text-shadow: 0 0 ${size}px rgba(14, 165, 233, 0.9);
+                    left: ${startX}%;
+                    top: ${startY}%;
+                    animation: floatParticle ${duration}s ease-in-out ${delay}s infinite;
+                    pointer-events: none;
+                    font-weight: bold;
+                `;
+            } else {
+                // Binary digit (0 or 1)
+                const digit = binaryDigits[Math.floor(Math.random() * 2)];
+                const size = Math.random() * 20 + 20; // 20-40px (larger, was 12-28px)
+                const startX = Math.random() * 100;
+                const startY = Math.random() * 100;
+                const duration = Math.random() * 15 + 12; // 12-27s (faster, was 25-55s)
+                const delay = Math.random() * 5;
+
+                particle.textContent = digit;
+                particle.style.cssText = `
+                    position: absolute;
+                    font-size: ${size}px;
+                    color: rgba(6, 182, 212, 0.4);
+                    text-shadow: 0 0 ${size / 2}px rgba(6, 182, 212, 0.6);
+                    left: ${startX}%;
+                    top: ${startY}%;
+                    animation: floatParticle ${duration}s ease-in-out ${delay}s infinite;
+                    pointer-events: none;
+                    font-family: 'Courier New', monospace;
+                    font-weight: bold;
+                `;
+            }
+
+            particlesContainer.appendChild(particle);
+        }
+
+        // Create neural network connection lines
+        for (let i = 0; i < 10; i++) {
+            const line = document.createElement('div');
+            const length = Math.random() * 200 + 150; // 150-350px (longer, was 100-250px)
+            const angle = Math.random() * 360;
+            const startX = Math.random() * 100;
+            const startY = Math.random() * 100;
+            const duration = Math.random() * 10 + 8; // 8-18s (faster, was 15-35s)
+            const delay = Math.random() * 3;
+
+            line.style.cssText = `
+                position: absolute;
+                width: ${length}px;
+                height: 2px;
+                background: linear-gradient(90deg, 
+                    transparent 0%, 
+                    rgba(14, 165, 233, 0.3) 50%, 
+                    transparent 100%);
+                left: ${startX}%;
+                top: ${startY}%;
+                transform: rotate(${angle}deg);
+                animation: pulseLine ${duration}s ease-in-out ${delay}s infinite;
+                pointer-events: none;
+                transform-origin: left center;
+            `;
+
+            particlesContainer.appendChild(line);
+        }
+
+        // Add keyframe animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes floatParticle {
+                0%, 100% {
+                    transform: translate(0, 0) scale(1) rotate(0deg);
+                    opacity: 0.3;
+                }
+                25% {
+                    transform: translate(60px, -100px) scale(1.2) rotate(90deg);
+                    opacity: 0.7;
+                }
+                50% {
+                    transform: translate(-40px, -200px) scale(0.8) rotate(180deg);
+                    opacity: 0.5;
+                }
+                75% {
+                    transform: translate(90px, -280px) scale(1.1) rotate(270deg);
+                    opacity: 0.8;
+                }
+            }
+            
+            @keyframes pulseLine {
+                0%, 100% {
+                    opacity: 0.2;
+                    transform: scaleX(1);
+                }
+                50% {
+                    opacity: 0.6;
+                    transform: scaleX(1.3);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>

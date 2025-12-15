@@ -1,0 +1,103 @@
+<!-- Floating Particle Dots -->
+<script>
+    // Create advanced particle system
+    const particlesContainer = document.getElementById('particles-bg');
+
+    // Create floating dots
+    for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle-dot';
+
+        const size = Math.random() * 4 + 2;
+        const startX = Math.random() * 100;
+        const startY = Math.random() * 100;
+        const duration = Math.random() * 20 + 15;
+        const delay = Math.random() * 5;
+
+        particle.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        background: radial-gradient(circle, rgba(127, 205, 255, 0.8), rgba(66, 175, 250, 0.3));
+        border-radius: 50%;
+        left: ${startX}%;
+        top: ${startY}%;
+        animation: floatDot ${duration}s ease-in-out ${delay}s infinite;
+        box-shadow: 0 0 ${size * 2}px rgba(127, 205, 255, 0.6);
+    `;
+
+        particlesContainer.appendChild(particle);
+    }
+
+    // Create connecting lines (neural network style)
+    for (let i = 0; i < 15; i++) {
+        const line = document.createElement('div');
+        line.className = 'connection-line';
+
+        const length = Math.random() * 200 + 100;
+        const angle = Math.random() * 360;
+        const startX = Math.random() * 100;
+        const startY = Math.random() * 100;
+        const duration = Math.random() * 15 + 10;
+        const delay = Math.random() * 3;
+
+        line.style.cssText = `
+        position: absolute;
+        width: ${length}px;
+        height: 1px;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(66, 175, 250, 0.3) 20%, 
+            rgba(127, 205, 255, 0.5) 50%,
+            rgba(66, 175, 250, 0.3) 80%, 
+            transparent 100%);
+        left: ${startX}%;
+        top: ${startY}%;
+        transform: rotate(${angle}deg);
+        animation: pulse ${duration}s ease-in-out ${delay}s infinite;
+        transform-origin: left center;
+    `;
+
+        particlesContainer.appendChild(line);
+    }
+</script>
+
+<style>
+    @keyframes floatDot {
+
+        0%,
+        100% {
+            transform: translate(0, 0);
+            opacity: 0.4;
+        }
+
+        25% {
+            transform: translate(50px, -80px);
+            opacity: 0.8;
+        }
+
+        50% {
+            transform: translate(-30px, -150px);
+            opacity: 0.6;
+        }
+
+        75% {
+            transform: translate(80px, -220px);
+            opacity: 0.9;
+        }
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 0.2;
+            transform: scaleX(1);
+        }
+
+        50% {
+            opacity: 0.6;
+            transform: scaleX(1.2);
+        }
+    }
+</style>
