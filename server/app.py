@@ -54,34 +54,14 @@ def load_all_presentations():
     ]
     
     all_slides = []
-    missing_files = []
-    
-    print(f"\n🔍 Looking for markdown files in: {BASE_DIR}")
-    print(f"   Current working directory: {os.getcwd()}")
-    print(f"   __file__ is: {__file__}")
-    
     for filename in files:
         filepath = BASE_DIR / filename
-        print(f"   Checking: {filepath}")
         if filepath.exists():
-            print(f"     ✓ Found!")
-            try:
-                with open(filepath, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    slides = parse_markdown_to_slides(content)
-                    all_slides.extend(slides)
-                    print(f"     ✓ Loaded {len(slides)} slides from {filename}")
-            except Exception as e:
-                print(f"     ✗ Error reading {filename}: {str(e)}")
-                missing_files.append(f"{filename} (read error: {str(e)})")
-        else:
-            print(f"     ✗ Not found!")
-            missing_files.append(filename)
+            with open(filepath, 'r', encoding='utf-8') as f:
+                content = f.read()
+                slides = parse_markdown_to_slides(content)
+                all_slides.extend(slides)
     
-    if missing_files:
-        print(f"\n⚠️  Missing files: {', '.join(missing_files)}")
-    
-    print(f"\n✅ Total slides loaded: {len(all_slides)}\n")
     return all_slides
 
 @app.route('/')
@@ -92,26 +72,11 @@ def index():
 @app.route('/api/slides')
 def get_slides():
     """API endpoint to get all slides"""
-    try:
-        slides = load_all_presentations()
-        if not slides:
-            return jsonify({
-                'error': 'No slides found',
-                'message': 'Could not load any markdown files. Check server logs for details.',
-                'base_dir':  str(BASE_DIR),
-                'cwd': os.getcwd()
-            }), 404
-        return jsonify({
-            'total': len(slides),
-            'slides': slides
-        })
-    except Exception as e:
-        return jsonify({
-            'error': 'Failed to load presentation',
-            'message': str(e),
-            'base_dir': str(BASE_DIR),
-            'cwd': os.getcwd()
-        }), 500
+    slides = load_all_presentations()
+    return jsonify({
+        'total': len(slides),
+        'slides': slides
+    })
 
 @app.route('/diagrams/<path:filename>')
 def serve_diagram(filename):
@@ -137,20 +102,15 @@ if __name__ == '__main__':
     templates_dir = Path(__file__).parent / 'templates'
     templates_dir.mkdir(exist_ok=True)
     
-    # Get port from environment variable (for Render deployment)
+    # Get port from environment (Render uses PORT env var)
     port = int(os.environ.get('PORT', 5000))
     
     print("🚀 Starting RL Presentation Server...")
     print("📊 Loading presentation content...")
     print(f"📁 Serving diagrams from: {DIAGRAMS_DIR}")
-    print(f"📁 Base directory: {BASE_DIR}")
     print("\n✅ Server ready!")
-    print(f"🌐 Server running on port: {port}")
+    print(f"🌐 Server running on port {port}")
     print("\nPress CTRL+C to stop the server\n")
     
-    # Check if markdown files exist
-    for filename in ['rl_course_presentation.md', 'module2_content.md', 'module3_content.md', 'modules_4_5_6_content.md', 'modules_7_8_labs_final.md']:
-        filepath = BASE_DIR / filename
-        print(f"Checking: {filepath} - {'✓ Found' if filepath.exists() else '✗ Missing'}")
-    
+    # Use debug=False in production
     app.run(debug=False, host='0.0.0.0', port=port)
