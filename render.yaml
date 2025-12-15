@@ -2,8 +2,9 @@ services:
   - type: web
     name: rl-presentation
     runtime: python
+    plan: free
     buildCommand: pip install -r server/requirements.txt
-    startCommand: python server/app.py
+    startCommand: cd server && python app.py
     envVars:
-      - key: PORT
-        value: 10000
+      - key: PYTHON_VERSION
+        value: 3.9.0
